@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
     avatar = Column(String(100),
                     default='https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/avatar-dep-13-1.jpg')
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
-    # receipts = relationship('Receipt', backref='user', lazy=True)
+    receipts = relationship('Receipt', backref='user', lazy=True)
     # comments = relationship('Comment', backref='user', lazy=True)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class Phong(db.Model):
     category_id = Column(Integer, ForeignKey(LoaiPhong.id), nullable=False)
     image = Column(String(100))
     acreage =Column(Float,default=0)
-    # receipt_details = relationship('ReceiptDetails', backref='phong', lazy=True)
+    receipt_details = relationship('ReceiptDetails', backref='phong', lazy=True)
     # comments = relationship('Comment', backref='phong', lazy=True)
 
 
@@ -92,7 +92,7 @@ class Interaction(BaseModel):
 if __name__ == "__main__":
     from app import app
     with app.app_context():
-          db.create_all()
+        db.create_all()
 
         #
         # import hashlib
@@ -146,6 +146,7 @@ if __name__ == "__main__":
         #              category_id=2,
         #              image="https://www.hoteljob.vn/files/VB2-%E1%BA%A3nh%20HTJ/cac-loai-phong-trong-khach-san-2.jpg",
         #              acreage=23.2)
-        #
+
+
         # db.session.add_all([p1,p2,p3,p4,p5,p6,p7,p8])
         # db.session.commit()

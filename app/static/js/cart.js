@@ -53,7 +53,7 @@ function deleteCart(id, obj) {
 }
 
 function pay() {
-    if (confirm("Bạn chắc chắn thanh toán!") === true) {
+    if (confirm("Bạn chắc chắn đặt phòng!") === true) {
         fetch("/api/pay", {
             method: "post"
         }).then(res => res.json()).then(data => {

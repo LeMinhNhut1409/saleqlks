@@ -48,7 +48,7 @@ class MyStatsView(AuthenticatedUser):
     def index(self):
         kw = request.args.get("kw")
         return self.render('admin/stats.html',
-                           stats=dao.revenue_stats(kw))
+                           stats=dao.revenue_stats())
 
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
@@ -57,7 +57,6 @@ class MyLogoutView(AuthenticatedUser):
         return redirect('/admin')
 
 
-    
 admin.add_view(MyCategoryView(LoaiPhong, db.session))
 admin.add_view(MyProductView(Phong, db.session))
 admin.add_view(MyStatsView(name='Thống Kê Báo Cáo'))

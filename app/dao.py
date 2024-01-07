@@ -66,12 +66,22 @@ def count_products_by_cate():
 
 
 def revenue_stats(kw=None):
-    query = db.session.query(Phong.id,Phong.name, func.sum(ReceiptDetails.price*ReceiptDetails.quantity))\
+    query = db.session.query(Phong.id,Phong.name, func.sum(ReceiptDetails.price * ReceiptDetails.quantity))\
                      .join(ReceiptDetails, ReceiptDetails.product_id == Phong.id).group_by(Phong.id)
     if kw:
         query = query.filter(Phong.name.contains(kw))
 
     return query
+
+
+def revenue_stats_by_month(year=2024):
+    return db.session.query(func.extract('month', Receipt.created_date),
+                            func.sum(ReceiptDetails.price*ReceiptDetails.quantity))\
+                        .join(ReceiptDetails, ReceiptDetails.receipt_id == Receipt.id)\
+                        .filter(func.extract('year', Receipt.created_date) == year)\
+                        .group_by(func.extract('month', Receipt.created_date)).all()
+
+
 
 
 def add_receipt(cart):
