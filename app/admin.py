@@ -4,6 +4,7 @@ from app import app, db, dao
 from app.models import LoaiPhong, Phong
 from flask_login import logout_user, current_user
 from flask import redirect, request
+
 from app.models import UserRoleEnum
 
 class MyAdminIndex(AdminIndexView):
@@ -28,8 +29,8 @@ class AuthenticatedAdmin(ModelView):
 
 class MyProductView(AuthenticatedAdmin):
     column_display_pk = True
-    column_list = ['id', 'name', 'price', 'category']
-    column_searchable_list = ['name']
+    column_list = ['maPhong', 'tenPhong', 'giaPhong', 'loaiPhong']
+    column_searchable_list = ['tenPhong']
     can_export = True
     can_view_details = True
 
@@ -40,7 +41,7 @@ class MyProductView(AuthenticatedAdmin):
 
 
 class MyCategoryView(AuthenticatedAdmin):
-    column_list = ['name', 'products']
+    column_list = ['tenLP', 'phongs']
 
 
 class MyStatsView(AuthenticatedUser):
@@ -57,7 +58,7 @@ class MyLogoutView(AuthenticatedUser):
         return redirect('/admin')
 
 
-admin.add_view(MyCategoryView(LoaiPhong, db.session))
-admin.add_view(MyProductView(Phong, db.session))
+admin.add_view(MyCategoryView(LoaiPhong,db.session, category='Quản Lý Danh Sách Phòng'))
+admin.add_view(MyProductView(Phong,db.session, category='Quản Lý Danh Sách Phòng'))
 admin.add_view(MyStatsView(name='Thống Kê Báo Cáo'))
-admin.add_view(MyLogoutView(name='Đăng xuất'))
+admin.add_view(MyLogoutView(name='Đăng Xuất'))

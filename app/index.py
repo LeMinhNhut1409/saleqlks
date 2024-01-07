@@ -1,5 +1,5 @@
 import math
-from flask import render_template, request, redirect, session, jsonify
+from flask import render_template, request, redirect, session, jsonify, url_for
 import dao
 import utils
 from app import app, login
@@ -21,9 +21,6 @@ def index():
                            pages=math.ceil(total/app.config['PAGE_SIZE']))
 
 
-@app.route('/products/<id>')
-def details(id):
-    return render_template('details.html')
 
 
 @app.route("/login", methods=['get', 'post'])
@@ -48,27 +45,27 @@ def process_logout_user():
     return redirect("/login")
 
 
-@app.route('/register', methods=['get', 'post'])
-def register_user():
-    err_msg = ""
-    if request.method.__eq__('POST'):
-        password = request.form.get('password')
-        confirm = request.form.get('confirm')
-
-        if password.__eq__(confirm):
-            try:
-                dao.add_user(name=request.form.get('name'),
-                             username=request.form.get('username'),
-                             password=password,
-                             avatar=request.files.get('avatar'))
-            except:
-                err_msg = 'Hệ thống đang bị lỗi!'
-            else:
-                return redirect('/login')
-        else:
-            err_msg = 'Mật khẩu KHÔNG khớp!'
-
-    return render_template('register.html', err_msg=err_msg)
+# @app.route('/register', methods=['get', 'post'])
+# def register_user():
+#     err_msg = ""
+#     if request.method.__eq__('POST'):
+#         password = request.form.get('password')
+#         confirm = request.form.get('confirm')
+#
+#         if password.__eq__(confirm):
+#             try:
+#                 dao.add_user(name=request.form.get('name'),
+#                              username=request.form.get('username'),
+#                              password=password,
+#                              avatar=request.files.get('avatar'))
+#             except:
+#                 err_msg = 'Hệ thống đang bị lỗi!'
+#             else:
+#                 return redirect('/login')
+#         else:
+#             err_msg = 'Mật khẩu KHÔNG khớp!'
+#
+#     return render_template('register.html', err_msg=err_msg)
 
 
 @app.route('/admin/login', methods=['post'])
@@ -76,13 +73,11 @@ def login_admin_process():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    user = dao.auth_user(username=username, password=password)
+    user = dao.auth_admin(username=username, password=password)
     if user:
         login_user(user=user)
 
     return redirect('/admin')
-
-
 
 @app.route('/api/cart', methods=['post'])
 def add_cart():
@@ -170,6 +165,27 @@ def common_resp():
         'categories': dao.load_categories(),
         'cart': utils.count_cart(session.get('cart'))
     }
+
+
+@app.route('/products/<id>')
+def details(id):
+    comments = dao.get_comments_by_prod_id(id)
+    return render_template('details.html', product=dao.get_product_by_id(id), comments=comments)
+
+
+@app.route("/api/products/<id>/comments", methods=['post'])
+@login_required
+def add_comment(id):
+    content = request.json.get('content')
+
+    try:
+        c = dao.add_comment(product_id=id, content=content)
+    except:
+        return jsonify({'status': 500, 'err_msg': 'Hệ thống đang có lỗi!'})
+    else:
+
+        return jsonify({'status': 200, "c": {'content': c.content, "user": {"avatar": c.user.avatar}}})
+
 
 @login.user_loader
 def load_user(user_id):

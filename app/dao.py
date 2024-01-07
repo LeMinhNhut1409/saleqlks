@@ -1,4 +1,4 @@
-from app.models import LoaiPhong, Phong, User, Receipt, ReceiptDetails
+from app.models import LoaiPhong, Phong, TaiKhoan, Receipt, ReceiptDetails, Enum, UserRoleEnum, Comment
 from app import app, db
 import hashlib
 import cloudinary.uploader
@@ -34,42 +34,58 @@ def count_product():
     return Phong.query.count()
 
 def get_user_by_id(id):
-    return User.query.get(id)
+    return TaiKhoan.query.get(id)
 
 
-
-def auth_user(username, password):
-    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    return User.query.filter(User.username.__eq__(username.strip()),
-                            User.password.__eq__(password)).first()
-
-def auth_user(username, password):
-    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    return User.query.filter(User.username.__eq__(username.strip()),
-                            User.password.__eq__(password)).first()
+def get_comments_by_prod_id(id):
+    return Comment.query.filter(Comment.product_id.__eq__(id)).all()
 
 
-def add_user(name, username, password, avatar):
-    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    u = User(name=name, username=username, password=password)
-    if avatar:
-        res = cloudinary.uploader.upload(avatar)
-        print(res)
-        u.avatar = res['secure_url']
-
-    db.session.add(u)
+def add_comment(product_id, content):
+    c = Comment(user=current_user, product_id=product_id, content=content)
+    db.session.add(c)
     db.session.commit()
 
+    return c
+
+
+def get_product_by_id(id):
+    return Phong.query.get(id)
+
+
+def auth_user(username, password):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    return TaiKhoan.query.filter(TaiKhoan.username.__eq__(username.strip()),
+                            TaiKhoan.password.__eq__(password)).first()
+
+def auth_admin(username, password, role=UserRoleEnum.ADMIN):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    return TaiKhoan.query.filter(TaiKhoan.username.__eq__(username.strip()),
+                            TaiKhoan.password.__eq__(password),
+                            TaiKhoan.user_role.__eq__(role)).first()
+
+
+# def add_user(name, username, password, avatar):
+#     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+#     u = TaiKhoan(TenTK=name, username=username, password=password)
+#     if avatar:
+#         res = cloudinary.uploader.upload(avatar)
+#         print(res)
+#         u.avatar = res['secure_url']
+#
+#     db.session.add(u)
+#     db.session.commit()
+
 def count_products_by_cate():
-    return db.session.query(LoaiPhong.id, LoaiPhong.name, func.count(Phong.id))\
-                     .join(Phong, Phong.category_id == LoaiPhong.id, isouter=True).group_by(LoaiPhong.id).all()
+    return db.session.query(LoaiPhong.maLP, LoaiPhong.tenLP, func.count(Phong.maPhong))\
+                     .join(Phong, Phong.loaiphong_id == LoaiPhong.maLP, isouter=True).group_by(LoaiPhong.maLP).all()
 
 
 def revenue_stats(kw=None):
-    query = db.session.query(Phong.id,Phong.name, func.sum(ReceiptDetails.price * ReceiptDetails.quantity))\
-                     .join(ReceiptDetails, ReceiptDetails.product_id == Phong.id).group_by(Phong.id)
+    query = db.session.query(Phong.maPhong,Phong.tenPhong, func.sum(ReceiptDetails.price * ReceiptDetails.quantity))\
+                     .join(ReceiptDetails, ReceiptDetails.product_id == Phong.maPhong).group_by(Phong.maPhong)
     if kw:
-        query = query.filter(Phong.name.contains(kw))
+        query = query.filter(Phong.tenPhong.contains(kw))
 
     return query
 
@@ -95,3 +111,6 @@ def add_receipt(cart):
             db.session.add(d)
 
         db.session.commit()
+
+
+

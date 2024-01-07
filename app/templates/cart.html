@@ -1,6 +1,6 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Giỏ hàng{% endblock %}
+{% block title %}Đặt phòng{% endblock %}
 
 {% block content %}
 {% if 'cart' in session %}
@@ -13,12 +13,12 @@
         <th></th>
     </tr>
     {% for c in session['cart'].values() %}
-    <tr id="product{{c.id}}">
-        <td>{{ c.id }}</td>
-        <td>{{ c.name }}</td>
-        <td>{{ "{:,.0f}".format(c.price) }} VNĐ</td>
+    <tr id="product{{c.maPhong}}">
+        <td>{{ c.maPhong }}</td>
+        <td>{{ c.tenPhong }}</td>
+        <td>{{ "{:,.0f}".format(c.giaPhong) }} VNĐ</td>
         <td>
-            <button class="btn btn-danger" onclick="deleteCart({{c.id}}, this)">&times;</button>
+            <button class="btn btn-danger" onclick="deleteCart({{c.maPhong}}, this)">&times;</button>
         </td>
     </tr>
     {% endfor %}
@@ -33,7 +33,7 @@
     {% if current_user.is_authenticated %}
     <button class="btn btn-success" onclick="pay()">Đặt phòng</button>
     {% else %}
-    <p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> hoặc <a href="/register?next=/login"> đăng ký</a> để đặt phòng!</p>
+    <p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để đặt phòng!</p>
     {% endif %}
 </div>
 {% else %}

@@ -40,13 +40,13 @@
         {% for p in products %}
         <div class="col-xs-12 col-md-3" style="padding: 10px;">
             <div class="card" style="background-color: #b2b28e;">
-                <img class="card-img-center" src="{{ p.image }}" alt="Card image">
+                <img class="card-img-center" src="{{ p.hinhAnh }}" alt="Card image">
                 <div class="card-body">
-                    <h4 class="card-title"> {{ p.name }} </h4>
-                    <p class="card-text"><i class="fa-solid fa-dollar-sign"></i> {{ "{:,.0f}".format(p.price) }} VNĐ</p>
-                    <p class="card-text"><i class="fa-regular fa-square"></i> {{p.acreage}} m²</p>
+                    <h4 class="card-title"> {{ p.tenPhong }} </h4>
+                    <p class="card-text"><i class="fa-solid fa-dollar-sign"></i> {{ "{:,.0f}".format(p.giaPhong) }} VNĐ</p>
+                    <p class="card-text"><i class="fa-regular fa-square"></i> {{p.dienTich}} m²</p>
                     <a href="/products/{{p.id}}" class="btn btn-outline-primary">Xem chi tiết phòng</a>
-                    <a href="javascript:;" class="btn btn-outline-danger" onclick="addToCart({{p.id}}, '{{p.name}}', {{p.price}})">Đặt phòng</a>
+                    <a href="javascript:;" class="btn btn-outline-danger" onclick="addToCart({{p.maPhong}}, '{{p.tenPhong}}', {{p.giaPhong}})">Đặt phòng</a>
                 </div>
             </div>
         </div>
